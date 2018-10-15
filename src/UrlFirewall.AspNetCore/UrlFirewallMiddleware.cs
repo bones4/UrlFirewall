@@ -23,17 +23,20 @@ namespace UrlFirewall.AspNetCore
         {
             string path = context.Request.Path.ToString().ToLower();
             string method = context.Request.Method.ToLower();
-            if (_validator.Validate(path, method))
-            {
-                _logger.LogInformation($"The path {path} valid.");
-                return this._next(context);
-            }
-            else
-            {
+            if (!_validator.ValidateUrl(path, method))
+            { 
                 _logger.LogInformation($"The path {path} invalid.");
                 context.Response.StatusCode = (int) _validator.Options.StatusCode;
                 return Task.CompletedTask;;
             }
+            string ip = UrlFirewallMiddlewareExtensions.GetClientIp(context);
+            if (!_validator.ValidateIp(ip, method))
+            {
+                _logger.LogInformation($"The ip {ip} invalid.");
+                context.Response.StatusCode = (int)_validator.Options.StatusCode;
+                return Task.CompletedTask; ;
+            }
+            return this._next(context);
         }
     }
 }

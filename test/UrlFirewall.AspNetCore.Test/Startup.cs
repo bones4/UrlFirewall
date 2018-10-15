@@ -28,6 +28,7 @@ namespace UrlFirewall.AspNetCore.Test
             {
                 options.RuleType = UrlFirewallRuleType.Black;
                 options.SetRuleList(Configuration.GetSection("UrlBlackList"));
+                options.SetIpList(Configuration.GetSection("IpBlackList"));
                 options.StatusCode = HttpStatusCode.NotFound;
             });
             services.AddMvc();

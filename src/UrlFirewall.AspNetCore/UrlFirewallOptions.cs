@@ -12,10 +12,15 @@ namespace UrlFirewall.AspNetCore
         /// </summary>
         public UrlFirewallRuleType RuleType { get; set; } = UrlFirewallRuleType.Black;
 
+
+
         /// <summary>
         /// Standard Rule.String complete matching
         /// </summary>
         public List<UrFirewalllRule> StandardRuleList { get; set; }=new List<UrFirewalllRule>();
+
+        public List<UrFirewalllRule> StandardIpRuleList { get; set; } = new List<UrFirewalllRule>();
+        
 
         /// <summary>
         /// Regex Rule.Regex matching.The two rule list is set up to speed up the matching.
@@ -54,6 +59,29 @@ namespace UrlFirewall.AspNetCore
                     t.Url = t.Url.ToLower();
                     StandardRuleList.Add(t);
                 }
+            }
+        }
+
+        public void SetIpList(IConfigurationSection section)
+        {
+            if (section == null)
+            {
+                throw new ArgumentException(nameof(section));
+            }
+
+            var list = section.Get<List<UrFirewalllRule>>();
+
+            if (list == null)
+            {
+                throw new UrlFirewallException("The section key is invalid.");
+            }
+
+            foreach (var t in list)
+            {
+                t.Method = t.Method.ToLower();
+
+                t.Url = t.Url.ToLower();
+                StandardIpRuleList.Add(t);
             }
         }
     }
